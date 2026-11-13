@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Simulado ENADE · ADS · Stela</title>
+  <meta name="description" content="Treino para o ENADE de Tecnologia em Análise e Desenvolvimento de Sistemas: as provas oficiais do INEP (2011, 2014, 2017 e 2021) com cartão-resposta, treino por área e painel de desempenho. Profa. Maristela, Faculdade de Tecnologia e Inovação Senac DF.">
+
+  <link rel="icon" href="assets/img/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <script src="assets/js/placa.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@100..125,400..900&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="assets/css/estilo.css">
+  <link rel="stylesheet" href="assets/css/disciplina.css?v=4">
+  <link rel="stylesheet" href="assets/css/neon.css?v=1">
+  <link rel="stylesheet" href="assets/css/conta.css?v=4">
+  <link rel="stylesheet" href="css/enade.css?v=1">
+</head>
+<body>
+
+  <!-- ===================== BARRA DO TOPO (igual em todos os sites) ===================== -->
+  <header class="barra">
+    <div class="envolve">
+      <div class="marcas">
+        <a class="marca-disc marca-logo" href="./" title="Página inicial do simulado"><img src="assets/img/enade.svg?v=1" alt="Simulado ENADE ADS: página inicial" width="32" height="32"></a>
+      </div>
+      <button type="button" class="btn-menu" id="btn-menu" aria-expanded="false" aria-controls="menu">Menu</button>
+      <nav class="nav" id="menu" aria-label="Seções do simulado">
+        <a href="#como">Como funciona</a>
+        <a href="#areas">Treino por área</a>
+        <a href="#provas">Provas completas</a>
+        <a href="#desempenho">Meu desempenho</a>
+        <a href="#prova">A prova</a>
+      </nav>
+      <div class="ajustes">
+        <button type="button" id="btn-tema" aria-label="Mudar para o tema claro">
+          <svg class="sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="lua" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+        </button>
+        <button type="button" id="btn-fonte" aria-label="Aumentar o tamanho do texto">A+</button>
+        <button type="button" id="btn-movimento" aria-pressed="false">
+          <svg class="pausar" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg class="tocar" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg>
+          <span class="rotulo">Pausar animações</span>
+        </button>
+        <a class="marca" href="/" title="Portal da Stela">
+          <img src="assets/img/estrela.webp" alt="" width="26" height="24">
+          <span class="marca-texto">Stela</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="inicio">
+
+    <!-- ===================== ABERTURA ===================== -->
+    <section class="abertura">
+      <canvas class="chuva-matrix" aria-hidden="true"></canvas>
+      <div class="envolve abertura-grade">
+        <div>
+          <p class="trilha-migalhas"><a href="/">Stela</a> <span aria-hidden="true">/</span> <span>Simulado ENADE</span></p>
+          <div class="aula-etiquetas">
+            <span class="etiqueta">Fac Senac DF</span>
+            <span class="etiqueta ouro">ENADE · ADS</span>
+          </div>
+          <h1>Treine para o <span class="neon">ENADE</span></h1>
+          <p class="subtitulo">As provas oficiais de Análise e Desenvolvimento de Sistemas, com cartão-resposta, correção na hora e um painel que mostra onde você está bem e onde precisa reforçar.</p>
+          <div class="en-contagem" data-contagem aria-live="polite"></div>
+          <p class="en-acoes"><a class="botao" href="#areas">Começar pelo treino por área</a> <a class="botao contorno" href="#provas">Fazer uma prova completa</a></p>
+        </div>
+        <div class="en-cartao-login cartao" data-caixa-login>
+          <span class="olho">Antes de treinar</span>
+          <h3>Entre com o e-mail da faculdade</h3>
+          <p>O simulado é para os alunos do Senac DF: use o seu <strong>@edu.df.senac.br</strong>. Assim as suas notas ficam guardadas e o painel mostra a sua evolução.</p>
+          <p class="en-status" data-status-login>Você ainda não entrou.</p>
+          <button type="button" class="botao" data-entrar>Entrar ou criar conta</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COMO FUNCIONA ===================== -->
+    <section class="bloco" id="como">
+      <div class="envolve">
+        <div class="cab">
+          <span class="olho">C1 · como funciona</span>
+          <h2>Primeiro por área, depois a prova inteira</h2>
+          <p>Treinar tudo de uma vez cansa. Vá por partes e, quando se sentir pronto, encare a prova completa, com tempo de prova.</p>
+        </div>
+        <ol class="en-passos">
+          <li class="cartao"><span class="en-n">1</span><h3>Entre com o @edu</h3><p>O mesmo login dos sites das disciplinas.</p></li>
+          <li class="cartao"><span class="en-n">2</span><h3>Treine por área</h3><p>Banco de dados, programação, engenharia de software… só as questões daquela área, das quatro provas.</p></li>
+          <li class="cartao"><span class="en-n">3</span><h3>Faça a prova completa</h3><p>A prova oficial de um ano, com 4 horas, como no dia.</p></li>
+          <li class="cartao"><span class="en-n">4</span><h3>Olhe o seu painel</h3><p>Onde você está forte, onde é atenção e onde é reforço.</p></li>
+        </ol>
+        <p class="en-nota">O simulado abre numa <strong>janela só para ele</strong>: de um lado, a página da questão no PDF oficial do INEP; do outro, o seu cartão-resposta. As respostas vão sendo salvas: se a internet cair, é só abrir de novo.</p>
+      </div>
+    </section>
+
+    <!-- ===================== TREINO POR ÁREA ===================== -->
+    <section class="bloco alt" id="areas">
+      <div class="envolve">
+        <div class="cab">
+          <span class="olho">T1 · treino por área</span>
+          <h2>Escolha uma área</h2>
+          <p>As questões objetivas das provas de 2011, 2014, 2017 e 2021, separadas por assunto, em ordem embaralhada. Uns 6 minutos por questão.</p>
+        </div>
+        <div class="en-areas" data-areas><p class="en-nota">Carregando as áreas…</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== PROVAS COMPLETAS ===================== -->
+    <section class="bloco" id="provas">
+      <div class="envolve">
+        <div class="cab">
+          <span class="olho">P1 · provas completas</span>
+          <h2>A prova inteira, como no dia</h2>
+          <p>As 35 questões objetivas da prova oficial de um ano, na ordem do caderno: 8 de Formação Geral e 27 do Componente Específico. As discursivas ficam de fora, por enquanto.</p>
+        </div>
+        <div class="repos en-provas" data-provas><p class="en-nota">Carregando as provas…</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== MEU DESEMPENHO ===================== -->
+    <section class="bloco alt" id="desempenho">
+      <div class="envolve">
+        <div class="cab">
+          <span class="olho">D1 · meu desempenho</span>
+          <h2>Onde você está</h2>
+          <p>Junta todas as questões que você já respondeu, por área. Forte é 70% ou mais; atenção, de 50% a 69%; reforço, abaixo de 50%.</p>
+        </div>
+        <div data-painel><p class="en-nota">Entre com o e-mail da faculdade para ver o seu painel.</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== A PROVA ===================== -->
+    <section class="bloco" id="prova">
+      <div class="envolve">
+        <div class="cab">
+          <span class="olho">E1 · a prova</span>
+          <h2>Como é o ENADE</h2>
+        </div>
+        <div class="en-prova">
+          <div class="cartao">
+            <h3>Duas partes</h3>
+            <ul>
+              <li><strong>Formação Geral:</strong> 10 questões (8 objetivas e 2 discursivas), iguais para todos os cursos.</li>
+              <li><strong>Componente Específico de ADS:</strong> 30 questões (27 objetivas e 3 discursivas).</li>
+              <li><strong>Tempo:</strong> 4 horas, das 13h30 às 17h30 (horário de Brasília), na edição de 2026.</li>
+            </ul>
+          </div>
+          <div class="cartao">
+            <h3>Dicas da professora</h3>
+            <ul>
+              <li>Leia a pergunta do fim primeiro: ela diz o que procurar no texto.</li>
+              <li>Nas questões de "avalie as afirmações", julgue uma afirmação de cada vez e vá riscando.</li>
+              <li>Não deixe nada em branco: questão em branco é questão errada.</li>
+              <li>Antes do dia, confira o seu local de prova no Cartão de Confirmação de Inscrição, no sistema do INEP.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="fonte">Fontes: <a href="https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos">INEP, provas e gabaritos do Enade</a>; <a href="https://abmes.org.br/legislacoes/detalhe/3675/portaria-inep-n-396">Portaria INEP nº 396/2021</a> (formato do componente específico de ADS); <a href="https://www.unisinos.br/enade/sobre">Unisinos, Enade 2026</a> (data e horário). Consultados em 13/11/2026. As questões e os gabaritos são do INEP; a separação por área é da professora.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="rodape">
+    <div class="envolve">
+      <div class="rodape-fim" style="margin-top:0; padding-top:0; border-top:0">
+        <span>Simulado ENADE · ADS · Profa. Maristela · Faculdade de Tecnologia e Inovação Senac DF · Feito com ♥ e sucata eletrônica.</span>
+        <span>Questões e gabaritos: INEP</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="assets/js/conta.js?v=5" data-disciplina="enade-ads"></script>
+  <script src="assets/js/matrix.js?v=3"></script>
+  <script src="js/areas.js?v=1"></script>
+  <script src="js/enade.js?v=1"></script>
+</body>
+</html>

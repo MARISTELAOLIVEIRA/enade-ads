@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Simulado ENADE ADS">
+  <!-- capelo de formatura com trilhas de circuito (desenho original) -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 24 32 12l26 12-26 12Z" stroke="#ffb347" stroke-width="3"/>
+    <path d="M16 29v11c0 4 7.2 8 16 8s16-4 16-8V29" stroke="#ffb347" stroke-width="3"/>
+    <path d="M52 27v14M52 41h-6M32 48v8M24 46v6h-6" stroke="#7c9cff" stroke-width="2.4"/>
+  </g>
+  <g fill="#7c9cff"><circle cx="46" cy="41" r="2.6"/><circle cx="32" cy="58" r="2.6"/><circle cx="18" cy="52" r="2.6"/></g>
+</svg>

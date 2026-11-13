@@ -1,0 +1,23 @@
+/*
+  neon.css: o neon do Simulado ENADE de ADS · versão 1 · 2026-11-13
+  Âmbar (o dourado de prova) com toques de azul-lavanda. Só deste site: não copie para os outros.
+  Carregue depois do estilo.css e do disciplina.css.
+*/
+:root {
+  --neon: #ffb347;
+  --neon-brilho: rgba(255, 179, 71, .45);
+  --neon-2: #7c9cff;
+  --neon-2-brilho: rgba(124, 156, 255, .4);
+}
+[data-tema="claro"] {
+  --neon: #a35a00;
+  --neon-brilho: rgba(163, 90, 0, .2);
+  --neon-2: #3a52c4;
+  --neon-2-brilho: rgba(58, 82, 196, .2);
+}
+.chuva-matrix { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .3;
+  -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 95%); mask-image: linear-gradient(180deg, #000 30%, transparent 95%); }
+[data-tema="claro"] .chuva-matrix { opacity: .16; }
+.neon { color: var(--neon); text-shadow: 0 0 8px var(--neon-brilho), 0 0 22px var(--neon-brilho); }
+.pausado .chuva-matrix { display: none; }
+@media (prefers-reduced-motion: reduce) { .chuva-matrix { display: none; } }
