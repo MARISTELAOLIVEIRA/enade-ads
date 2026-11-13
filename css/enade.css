@@ -217,3 +217,11 @@
 .sim-pdf-area .sim-fonte { margin: .2rem 0 0; color: #d9d6cc; font: .75rem var(--f-mono); text-align: center; }
 .sim-pdf-barra [data-ver-pdf] { font-size: .8rem; }
 .sim-pdf-barra [hidden] { display: none; }
+
+/* painel da professora */
+.cartao.pf-filtros { display: flex; flex-direction: row; justify-content: flex-start; text-align: left; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; margin-bottom: 1rem; }
+.pf-filtros label { display: inline-flex; gap: .4rem; align-items: center; font-size: .9rem; }
+.pf-filtros input[type="date"], .pf-filtros input[type="text"] { padding: .35rem .5rem; border-radius: 8px; border: 1px solid var(--borda-forte); background: var(--superficie); color: var(--texto); font: inherit; }
+.pf-bloco { margin-top: 1rem; }
+.pf-bloco small { color: var(--texto-2); }
+.pf-resumo { margin-top: .5rem; }
