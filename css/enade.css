@@ -225,3 +225,7 @@
 .pf-bloco { margin-top: 1rem; }
 .pf-bloco small { color: var(--texto-2); }
 .pf-resumo { margin-top: .5rem; }
+.pf-piscou { animation: pf-pisca 1.2s ease-out; }
+@keyframes pf-pisca { 0% { color: var(--neon); text-shadow: 0 0 8px var(--neon); } 100% { color: var(--texto-2); text-shadow: none; } }
+.pausado .pf-piscou { animation: none; }
+@media (prefers-reduced-motion: reduce) { .pf-piscou { animation: none; } }

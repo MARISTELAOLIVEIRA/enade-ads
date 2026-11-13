@@ -57,7 +57,9 @@
     (a.data || []).forEach((x) => { alunos[x.id] = x; });
     dados = { tentativas: t.data || [], alunos };
     $("[data-filtros]").hidden = false;
-    $("[data-atualizado]").textContent = "atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const st = $("[data-atualizado]");
+    st.textContent = "✔ atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    st.classList.remove("pf-piscou"); void st.offsetWidth; st.classList.add("pf-piscou");   // pisca para mostrar que atualizou
     desenhar();
   }
 
@@ -168,7 +170,11 @@
   $("[data-dia]").value = hojeBR();
   document.addEventListener("click", (e) => {
     if (e.target.closest("[data-entrar]")) CONTA.abrir();
-    if (e.target.closest("[data-atualizar]")) carregar();
+    const bt = e.target.closest("[data-atualizar]");
+    if (bt) {
+      bt.disabled = true; bt.textContent = "Soldando…";
+      carregar().finally(() => { bt.disabled = false; bt.textContent = "Atualizar agora"; });
+    }
     if (e.target.closest("[data-csv]")) baixarCsv();
   });
   ["[data-dia]", "[data-todos-dias]", "[data-esconder]"].forEach((s) => $(s).addEventListener("input", () => dados && desenhar()));
