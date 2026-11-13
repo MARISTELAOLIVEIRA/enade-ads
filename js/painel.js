@@ -1,5 +1,5 @@
 /*
-  painel.js: o painel da professora do Simulado ENADE de ADS · versão 1 · 2026-11-13
+  painel.js: o painel da professora do Simulado ENADE de ADS · versão 2 · 2026-11-13 (o banco diz quem é professora)
   Só para a conta da professora (prep_eh_professora no banco). Lê enade_tentativas e disc_alunos, que o RLS
   já libera para a professora (para o aluno, só as dele). Nada é gravado daqui.
   Mostra: a chamada do dia, cada aluno (todos os dias), a turma por área e a lista de simulados, com CSV.
@@ -27,11 +27,9 @@
     return parte ? `${nome} · ${parte}ª metade` : nome;
   }
 
-  // ---------- quem pode ver ----------
-  function ehProfessora() {
-    const u = window.CONTA && CONTA.usuario();
-    return Boolean(u && /@df\.senac\.br$/i.test(u.email || ""));   // alunos usam @edu.df.senac.br; o banco confere de novo
-  }
+  // ---------- quem pode ver: quem decide é o banco (tabela prep_professoras, a mesma do painel dos preparatórios) ----------
+  let professora = false;
+  const ehProfessora = () => professora;
 
   async function carregar() {
     if (!nuvem) { caixa.innerHTML = '<p class="en-nota">Não deu para falar com o banco agora.</p>'; return; }
@@ -41,9 +39,13 @@
       caixa.innerHTML = '<div class="cartao"><h3>Entre com a conta da professora</h3><p>Use o botão <strong>Entrar</strong> lá em cima, com o e-mail @df.senac.br.</p><button type="button" class="botao" data-entrar>Entrar</button></div>';
       return;
     }
-    if (!ehProfessora()) {
+    const { data: eh, error: erroEh } = await nuvem.rpc("prep_eh_professora");
+    professora = Boolean(eh) && !erroEh;
+    if (!professora) {
       $("[data-filtros]").hidden = true;
-      caixa.innerHTML = '<div class="cartao"><h3>Esta página é só da professora</h3><p>O seu desempenho está na <a href="./#desempenho">página do simulado</a>. 😉</p></div>';
+      caixa.innerHTML = `<div class="cartao"><h3>Esta página é só da professora</h3>
+        <p>Você entrou como <strong>${esc(u.email)}</strong>, e essa conta não está cadastrada como professora no banco.</p>
+        <p class="en-nota">Professora: cadastre esta conta em prep_professoras (SQL com a Claudinha) ou entre com a conta já cadastrada. Aluno: o seu desempenho está na <a href="./#desempenho">página do simulado</a>. 😉</p></div>`;
       return;
     }
     const [t, a] = await Promise.all([
