@@ -38,7 +38,7 @@
     const u = window.CONTA && CONTA.usuario();
     if (!u) {
       $("[data-filtros]").hidden = true;
-      caixa.innerHTML = '<div class="cartao"><h3>Entre com a conta da professora</h3><p>Use o botão <strong>Entrar</strong> lá em cima, com o e-mail @df.senac.br.</p><button type="button" class="botao" data-entrar>Entrar</button></div>';
+      caixa.innerHTML = '<div class="cartao"><h3>Entre com a conta da professora</h3><p>Use o botão <strong>Entrar</strong> lá em cima, com a sua conta que tem o status de professora.</p><button type="button" class="botao" data-entrar>Entrar</button></div>';
       return;
     }
     const { data: eh, error: erroEh } = await nuvem.rpc("prep_eh_professora");
