@@ -7,7 +7,10 @@
 const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
 
 (function () {
-  const nuvem = window.supabase ? window.supabase.createClient(CONTA_URL, CONTA_CHAVE) : null;
+  // alunos entram com @edu.df.senac.br; a professora, com @df.senac.br (quem decide de verdade é o banco: enade_pode)
+  const podeTreinar = () => Boolean(window.CONTA && CONTA.usuario() && /@(edu\.)?df\.senac\.br$/i.test(CONTA.usuario().email || ""));
+  // o mesmo cliente do conta.js (dois clientes com o mesmo login guardado travam um ao outro)
+  const nuvem = window.CONTA && CONTA.cliente ? CONTA.cliente() : null;
   const $ = (s) => document.querySelector(s);
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const pct = (a, t) => (t ? Math.round((100 * a) / t) : 0);
@@ -27,7 +30,7 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
 
   // ---------- abrir o simulado na janela dele ----------
   function abrirSimulado(modo, chave) {
-    if (!window.CONTA || !CONTA.daFaculdade()) {
+    if (!podeTreinar()) {
       CONTA.abrir("Entre com o e-mail da faculdade (@edu.df.senac.br) para treinar. É rapidinho.");
       return;
     }
@@ -80,7 +83,7 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
   // ---------- o painel do aluno ----------
   async function carregarPainel() {
     const caixa = $("[data-painel]");
-    if (!window.CONTA || !CONTA.daFaculdade() || !nuvem) {
+    if (!podeTreinar() || !nuvem) {
       caixa.innerHTML = '<p class="en-nota">Entre com o e-mail da faculdade para ver o seu painel.</p>';
       meusPorArea = {};
       if (catalogo) desenharAreas(catalogo.areas || {});
@@ -136,7 +139,7 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
   // ---------- login ----------
   function aoEntrar() {
     const st = $("[data-status-login]");
-    const ok = window.CONTA && CONTA.daFaculdade();
+    const ok = podeTreinar();
     const u = window.CONTA && CONTA.usuario();
     st.classList.toggle("ok", Boolean(ok));
     st.textContent = ok ? `Você entrou como ${u.email}. Bons treinos!` : u ? "Você entrou com um e-mail que não é @edu.df.senac.br. Saia e entre com o da faculdade." : "Você ainda não entrou.";
@@ -147,5 +150,5 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
   aoEntrar();
   carregarCatalogo();
   // quando o aluno volta da janela do simulado, o painel se atualiza
-  window.addEventListener("focus", () => { if (window.CONTA && CONTA.daFaculdade()) carregarPainel(); });
+  window.addEventListener("focus", () => { if (podeTreinar()) carregarPainel(); });
 })();

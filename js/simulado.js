@@ -6,8 +6,11 @@
   Endereços: simulado.html?modo=area&chave=bd · simulado.html?modo=prova&chave=2021 · simulado.html?resultado=<id>
 */
 (function () {
+  // alunos entram com @edu.df.senac.br; a professora, com @df.senac.br (quem decide de verdade é o banco: enade_pode)
+  const podeTreinar = () => Boolean(window.CONTA && CONTA.usuario() && /@(edu\.)?df\.senac\.br$/i.test(CONTA.usuario().email || ""));
   const params = new URLSearchParams(location.search);
-  const nuvem = window.supabase ? window.supabase.createClient(CONTA_URL, CONTA_CHAVE) : null;
+  // o mesmo cliente do conta.js (dois clientes com o mesmo login guardado travam um ao outro)
+  const nuvem = window.CONTA && CONTA.cliente ? CONTA.cliente() : null;
   const main = document.getElementById("sim");
   const esc = (t) => String(t == null ? "" : t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const pct = (a, t) => (t ? Math.round((100 * a) / t) : 0);
@@ -236,7 +239,7 @@
   let comecou = false;
   async function comecar() {
     if (comecou) return;
-    if (!window.CONTA || !CONTA.daFaculdade()) {
+    if (!podeTreinar()) {
       aviso("Entre com o e-mail da faculdade", "O simulado é para os alunos do Senac DF: entre com o seu @edu.df.senac.br.", '<button type="button" class="botao" data-entrar-sim>Entrar</button>');
       return;
     }

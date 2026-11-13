@@ -1,5 +1,5 @@
 /* ===================================================================
-   conta.js: login dos alunos nos sites das disciplinas · versão 5 · 2026-10-21 (progresso dos checklists na conta; ranking das atividades)
+   conta.js: login dos alunos nos sites das disciplinas · versão 6 · 2026-11-06 (CONTA.cliente(): o mesmo cliente do Supabase para o Stela Cloud chamar as funções)
    (cópia comum às disciplinas; o dos preparatórios é outro, em js/conta.js de lá)
 
    O site continua aberto para todo mundo. Para REGISTRAR o resultado de um quiz
@@ -444,6 +444,7 @@ window.CONTA = (function () {
     ranking,
     disciplina: DISCIPLINA,
     usuario: () => usuario,
+    cliente: () => nuvem, // versão 6: o Stela Cloud chama as funções sc_ com o mesmo login
     nome: () => nomeConta,
     formatarNome,
     daFaculdade: () => Boolean(usuario && emailDaFaculdade(usuario.email)),
