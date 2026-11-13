@@ -150,11 +150,9 @@
 .en-selo { display: inline-block; margin-left: .35rem; padding: .05rem .4rem; border-radius: 999px; font: 700 .75rem var(--f-mono); background: var(--superficie-2); }
 .en-selo.forte { color: var(--en-forte); } .en-selo.atencao { color: var(--en-atencao); } .en-selo.reforco { color: var(--en-reforco); }
 
-/* barras que enchem com um pulso de luz correndo (a "eletricidade na trilha") */
+/* barras que enchem ao aparecer (a luz que corria nelas saiu: atrapalhava a leitura) */
 [data-painel] .en-barras .trilho i { width: 0; position: relative; overflow: hidden; transition: width 1.2s var(--suave); }
 [data-painel].aceso .en-barras .trilho i { width: calc(var(--p) * 1%); }
-.en-barras .trilho i::after { content: ""; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation: en-pulso 2.6s ease-in-out infinite; }
-@keyframes en-pulso { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
 
 /* o medidor redondo dos acertos */
 .en-medidor { position: relative; }
@@ -199,13 +197,17 @@
 
 /* pausa e "reduzir movimento": tudo parado, já no lugar final */
 .pausado [data-painel] .en-barras .trilho i, .pausado .en-medidor .arco, .pausado .en-evolucao polyline, .pausado .en-evolucao circle { transition: none; }
-.pausado .en-barras .trilho i::after, .pausado .en-recado.com-stela img, .pausado .en-memoji-login, .pausado .sim-memoji-res, .pausado .sim-balao[open] .sim-fala { animation: none; }
+.pausado .en-recado.com-stela img, .pausado .en-memoji-login, .pausado .sim-memoji-res, .pausado .sim-balao[open] .sim-fala { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   [data-painel] .en-barras .trilho i, .en-medidor .arco, .en-evolucao polyline, .en-evolucao circle { transition: none; }
-  .en-barras .trilho i::after, .en-recado.com-stela img, .en-memoji-login, .sim-memoji-res, .sim-balao[open] .sim-fala { animation: none; }
+  .en-recado.com-stela img, .en-memoji-login, .sim-memoji-res, .sim-balao[open] .sim-fala { animation: none; }
 }
 @media (max-width: 640px) { .en-memoji-login { width: 56px; } .sim-memoji-res { width: 80px; } }
 .sim-cron { font-size: .82rem; padding: .3rem .7rem; }
 .sim-relogio[hidden], .sim-cron[hidden] { display: none; }
 /* a prova sorteada ganha destaque, com a borda neon */
 .en-provas .repo.en-sorteada { border-color: var(--neon); box-shadow: 0 0 0 1px var(--neon), 0 0 22px var(--neon-brilho, transparent); }
+
+/* chuva de 0 e 1 atrás do topo da janela do simulado (matrix.js; para com a pausa e com "reduzir movimento") */
+.sim-topo { isolation: isolate; overflow: hidden; }
+.sim-topo .chuva-matrix { opacity: .35; }
