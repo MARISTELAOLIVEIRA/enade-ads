@@ -135,8 +135,8 @@
 
 @media (max-width: 900px) {
   .sim-corpo { grid-template-columns: minmax(0, 1fr); }
-  .sim-lado { order: -1; }
-  .sim-pdf-area { max-height: none; min-height: 50vh; }
+  /* no celular: primeiro a questão (o recorte), embaixo o cartão-resposta */
+  .sim-pdf-area { max-height: none; min-height: 0; padding: .5rem; }
   .sim-lista-res li { grid-template-columns: 3.5rem minmax(0, 1fr); }
   .sim-lista-res .r { grid-column: 2; }
 }
@@ -211,3 +211,9 @@
 /* chuva de 0 e 1 atrás do topo da janela do simulado (matrix.js; para com a pausa e com "reduzir movimento") */
 .sim-topo { isolation: isolate; overflow: hidden; }
 .sim-topo .chuva-matrix { opacity: .35; }
+
+/* a questão recortada em imagem (questoes/): ocupa a área do PDF, com zoom pelos botões − e + */
+.sim-pdf-area .sim-recorte { display: block; width: calc(var(--z, 1) * 100%); max-width: none; height: auto; margin: 0 auto .7rem; background: #fff; border-radius: 6px; box-shadow: 0 6px 24px rgba(0, 0, 0, .4); }
+.sim-pdf-area .sim-fonte { margin: .2rem 0 0; color: #d9d6cc; font: .75rem var(--f-mono); text-align: center; }
+.sim-pdf-barra [data-ver-pdf] { font-size: .8rem; }
+.sim-pdf-barra [hidden] { display: none; }

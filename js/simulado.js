@@ -1,5 +1,5 @@
 /*
-  simulado.js: a janela do Simulado ENADE de ADS · versão 2 · 2026-11-13 (meia prova, recados da Stela com memoji, som na correção)
+  simulado.js: a janela do Simulado ENADE de ADS · versão 3 · 2026-11-13 (cada questão recortada em imagem, em questoes/; meia prova, recados da Stela, som)
   De um lado, a página da questão no PDF oficial do INEP (desenhada pelo pdf.js direto do site do INEP:
   nada do texto das provas fica neste site); do outro, o cartão-resposta. As respostas vão sendo salvas
   no banco (enade_salvar); a correção é feita pelo banco na entrega (enade_entregar).
@@ -38,6 +38,25 @@
   function voltar() {
     if (window.opener && !window.opener.closed) { window.opener.focus(); window.close(); }
     else location.href = "./#desempenho";
+  }
+
+  // ---------- a questão: o recorte em imagem (questoes/) ou a página do PDF oficial ----------
+  // questoes/indice.json: { "ads-2021-17": ["ads-2021-17-1.webp", ...] } (recortes das provas do INEP, fonte citada)
+  let recortes = {};
+  const carregarRecortes = fetch("questoes/indice.json?v=1").then((r) => (r.ok ? r.json() : {})).then((j) => { recortes = j || {}; }).catch(() => {});
+  let verPdf = false;      // o aluno pediu a página inteira no PDF
+  let zoomImg = 1;
+  function mostrarQuestao(item) {
+    const area = main.querySelector("[data-pdf]");
+    const info = main.querySelector("[data-pdf-info]");
+    const partes = recortes[item.id];
+    main.querySelectorAll("[data-pag]").forEach((b) => { b.hidden = Boolean(partes && !verPdf); });
+    if (!area || !partes || verPdf) return mostrarPagina(item, item.pagina);
+    const link = `${item.prova_url}#page=${item.pagina}`;
+    info.innerHTML = `${esc(item.banca || "INEP")} · ENADE ${item.ano} · questão ${item.numero} · <button type="button" data-ver-pdf>ver a página no PDF</button> <a href="${esc(link)}" target="_blank" rel="noopener">abrir o PDF numa aba</a>`;
+    area.style.setProperty("--z", zoomImg);
+    area.innerHTML = partes.map((f, i) => `<img class="sim-recorte" src="questoes/${esc(f)}" alt="Questão ${item.numero} do ENADE ${item.ano} de ADS (INEP)${partes.length > 1 ? `, parte ${i + 1} de ${partes.length}` : ""}" loading="eager">`).join("")
+      + `<p class="sim-fonte">Fonte: INEP, ENADE ${item.ano}, Tecnologia em Análise e Desenvolvimento de Sistemas, questão ${item.numero}.</p>`;
   }
 
   // ---------- o PDF oficial, uma página por vez ----------
@@ -115,7 +134,7 @@
     main.querySelector("[data-questao]").innerHTML = `
       <p class="ref">${esc(it.banca || "INEP")} · ENADE ${it.ano} · questão ${it.numero} · ${it.componente === "fg" ? "Formação Geral" : "Componente Específico"} · ${esc(nomeArea(it.area))}</p>
       <h2>Questão ${atual + 1} de ${t.itens.length}</h2>
-      <p class="en-nota">Leia a questão ${it.numero} no PDF (página ${it.pagina}) e marque a sua resposta:</p>
+      <p class="en-nota">Leia a questão e marque a sua resposta:</p>
       <div class="sim-letras" role="group" aria-label="Alternativas da questão ${it.numero}">${LETRAS.map((l) => `<button type="button" data-letra="${l}" aria-pressed="${r === l}">${l}</button>`).join("")}</div>
       <div class="sim-navega">
         <button type="button" class="botao contorno" data-mover="-1"${atual === 0 ? " disabled" : ""}>← Anterior</button>
@@ -124,7 +143,8 @@
         <button type="button" class="botao" data-mover="1">${atual === t.itens.length - 1 ? "Revisar e entregar" : "Próxima →"}</button>
       </div>`;
     desenharGrade();
-    mostrarPagina(it, it.pagina);
+    verPdf = false;
+    mostrarQuestao(it);
   }
   function salvarDepois() {
     const s = document.querySelector("[data-salvo]");
@@ -213,7 +233,7 @@
       const cls = it.anulada ? "anulada" : it.certa ? "certa" : "errada";
       const marca = it.anulada ? "anulada pelo INEP (não conta)" : `sua: ${it.resposta || "em branco"} · gabarito: ${it.gabarito}`;
       return `<li class="${cls}"><strong>${it.anulada ? "—" : it.certa ? "✔" : "✘"} ${i + 1}</strong>
-        <span>${esc(it.banca || "INEP")} · ENADE ${it.ano} · questão ${it.numero} · ${esc(nomeArea(it.area))}<br><a href="${esc(it.prova_url)}#page=${it.pagina}" target="_blank" rel="noopener">rever a questão no PDF (pág. ${it.pagina})</a></span>
+        <span>${esc(it.banca || "INEP")} · ENADE ${it.ano} · questão ${it.numero} · ${esc(nomeArea(it.area))}<br>${recortes[it.id] ? `<a href="questoes/${esc(recortes[it.id][0])}" target="_blank" rel="noopener">rever a questão</a> · ` : ""}<a href="${esc(it.prova_url)}#page=${it.pagina}" target="_blank" rel="noopener">no PDF (pág. ${it.pagina})</a></span>
         <span class="r">${marca}</span>${balaoDaStela(it)}</li>`;
     }).join("");
     const frase = p >= 70 ? "Compilou de primeira! Continue assim, filhote." : p >= 50 ? "Quase lá! Leia as minhas explicações nos erros e refaça as áreas mais fracas." : "Curto-circuito. Calma, é treino: leia as minhas explicações, confere a trilha e tenta de novo.";
@@ -292,6 +312,8 @@
     if (b.hasAttribute("data-som")) { try { localStorage.setItem("enade:som", somLigado() ? "0" : "1"); } catch (e) {} b.outerHTML = botaoSom(); if (somLigado()) tocar([659, 784]); return; }
     if (b.hasAttribute("data-entrar-sim")) return CONTA.abrir();
     if (b.dataset.pag) { const it = t.itens[atual]; return mostrarPagina(it, Math.max(1, paginaVista + Number(b.dataset.pag))); }
+    if (b.hasAttribute("data-ver-pdf")) { verPdf = true; return mostrarQuestao(t.itens[atual]); }
+    if (b.dataset.zoom && recortes[t.itens[atual].id] && !verPdf) { zoomImg = Math.max(.6, Math.min(2.4, zoomImg + .2 * Number(b.dataset.zoom))); return mostrarQuestao(t.itens[atual]); }
     if (b.dataset.zoom) { escala = Math.max(.7, Math.min(2.6, escala + .2 * Number(b.dataset.zoom))); return mostrarPagina(t.itens[atual], paginaVista); }
   });
   // atalhos: A a E respondem; setas mudam de questão
@@ -315,6 +337,7 @@
       return;
     }
     comecou = true;
+    await carregarRecortes;
     if (params.get("resultado")) {
       const { data, error } = await nuvem.rpc("enade_resultado", { p_tentativa: params.get("resultado") });
       if (error || !data) return aviso("Trilha rompida.", "Não achei esse simulado.", '<button type="button" class="botao" data-fechar>Voltar</button>');
