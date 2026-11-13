@@ -1,5 +1,5 @@
 /*
-  simulado.js: a janela do Simulado ENADE de ADS · versão 1 · 2026-11-13
+  simulado.js: a janela do Simulado ENADE de ADS · versão 2 · 2026-11-13 (meia prova, recados da Stela com memoji, som na correção)
   De um lado, a página da questão no PDF oficial do INEP (desenhada pelo pdf.js direto do site do INEP:
   nada do texto das provas fica neste site); do outro, o cartão-resposta. As respostas vão sendo salvas
   no banco (enade_salvar); a correção é feita pelo banco na entrega (enade_entregar).
@@ -30,7 +30,9 @@
     main.innerHTML = `<div class="sim-aviso-meio cartao"><h2>${titulo}</h2><p>${texto}</p>${botoes || ""}</div>`;
   }
   function tituloDe(modo, chave) {
-    return modo === "prova" ? `Prova ENADE ${esc(chave)} · ADS` : `Treino · ${esc(nomeArea(chave))}`;
+    if (modo !== "prova") return `Treino · ${esc(nomeArea(chave))}`;
+    const [ano, parte] = String(chave).split("-");   // "2021-1" = meia prova
+    return parte ? `Prova ENADE ${esc(ano)} · ${esc(parte)}ª metade · ADS` : `Prova ENADE ${esc(ano)} · ADS`;
   }
   function voltar() {
     if (window.opener && !window.opener.closed) { window.opener.focus(); window.close(); }
@@ -164,9 +166,39 @@
   }
 
   // ---------- resultado ----------
+  // a explicação da Stela (campo explicacao do banco): uma linha por parte, **negrito** vale
+  const textoExplica = (t) => String(t).split(/\n+/).filter(Boolean).map((l) => `<p>${esc(l).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>`).join("");
+  function balaoDaStela(it) {
+    const rosto = it.anulada ? "neutra" : it.certa ? "sorrindo" : "ideia";
+    const abre = it.explicacao ? "💬 A Stela explica" : "💬 Recado da Stela";
+    const corpo = it.explicacao ? textoExplica(it.explicacao)
+      : it.anulada ? "<p>O INEP anulou esta questão, então ela não conta. Mas vale ler: o assunto pode cair de novo.</p>"
+      : it.certa ? "<p>Compilou de primeira! A explicação desta questão ainda está sendo soldada. 🔧</p>"
+      : `<p>A explicação desta questão ainda está sendo soldada. 🔧 Por enquanto, abra a página ${it.pagina} do PDF e compare a sua (${esc(it.resposta || "em branco")}) com a ${esc(it.gabarito)}: o que a ${esc(it.gabarito)} tem que a sua não tem?</p>`;
+    return `<details class="sim-balao"${!it.certa && !it.anulada ? " open" : ""}><summary>${abre}</summary>
+      <div class="sim-fala"><img src="assets/memoji/${rosto}.webp" alt="" width="56" height="60"><div>${corpo}</div></div></details>`;
+  }
+  // som da correção (Web Audio, sem arquivo): só no resultado, nunca durante a prova; cala com a pausa e com o botão 🔇
+  const somLigado = () => { try { return localStorage.getItem("enade:som") !== "0"; } catch (e) { return true; } };
+  function tocar(notas) {
+    if (!somLigado() || document.documentElement.classList.contains("pausado")) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      notas.forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain(), t0 = ctx.currentTime + i * 0.13;
+        o.type = "triangle"; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+        o.connect(g).connect(ctx.destination); o.start(t0); o.stop(t0 + 0.4);
+      });
+    } catch (e) { /* sem som, sem problema */ }
+  }
+  const botaoSom = () => `<button type="button" class="botao contorno sim-som" data-som aria-pressed="${somLigado()}">${somLigado() ? "🔊 Som ligado" : "🔇 Som desligado"}</button>`;
   function desenharResultado(r) {
     document.querySelector("[data-revisar]").hidden = true;
     document.querySelector("[data-relogio]").textContent = "entregue";
+    document.querySelector("[data-relogio]").hidden = false;
+    document.querySelector("[data-cron]").hidden = true;
+    document.querySelector("[data-salvo]").textContent = "";
     document.querySelector("[data-titulo]").innerHTML = `${tituloDe(r.modo, r.chave)}<small>correção com o gabarito oficial do INEP</small>`;
     const p = pct(r.acertos, r.total);
     const areas = Object.entries(r.por_area || {}).sort((a, b) => pct(a[1].acertos, a[1].total) - pct(b[1].acertos, b[1].total));
@@ -181,29 +213,65 @@
       const marca = it.anulada ? "anulada pelo INEP (não conta)" : `sua: ${it.resposta || "em branco"} · gabarito: ${it.gabarito}`;
       return `<li class="${cls}"><strong>${it.anulada ? "—" : it.certa ? "✔" : "✘"} ${i + 1}</strong>
         <span>${esc(it.banca || "INEP")} · ENADE ${it.ano} · questão ${it.numero} · ${esc(nomeArea(it.area))}<br><a href="${esc(it.prova_url)}#page=${it.pagina}" target="_blank" rel="noopener">rever a questão no PDF (pág. ${it.pagina})</a></span>
-        <span class="r">${marca}</span></li>`;
+        <span class="r">${marca}</span>${balaoDaStela(it)}</li>`;
     }).join("");
-    const frase = p >= 70 ? "Compilou de primeira! Continue assim." : p >= 50 ? "Quase lá: revise os erros e refaça as áreas mais fracas." : "Curto-circuito. Confere a trilha e tenta de novo: comece pelas áreas em vermelho.";
+    const frase = p >= 70 ? "Compilou de primeira! Continue assim, filhote." : p >= 50 ? "Quase lá! Leia as minhas explicações nos erros e refaça as áreas mais fracas." : "Curto-circuito. Calma, é treino: leia as minhas explicações, confere a trilha e tenta de novo.";
+    const rosto = p >= 70 ? ["festa", "Stela comemorando"] : p >= 50 ? ["joinha", "Stela fazendo joinha"] : ["punho", "Stela dando força"];
     main.innerHTML = `<div class="sim-resultado">
       <div class="cartao"><span class="olho">Resultado</span>
-        <p class="sim-nota-grande">${p}%</p>
+        <div class="sim-nota-linha"><p class="sim-nota-grande">${p}%</p><img class="sim-memoji-res" src="assets/memoji/${rosto[0]}.webp" alt="${rosto[1]}" width="110" height="118"></div>
         <p><strong>${r.acertos} de ${r.total}</strong> questões certas${r.itens.some((x) => x.anulada) ? " (a anulada não conta)" : ""}. ${frase}</p>
         ${comp.fg || comp.ce ? `<p class="en-nota">${comp.fg ? `Formação Geral: ${comp.fg.acertos}/${comp.fg.total}. ` : ""}${comp.ce ? `Componente Específico: ${comp.ce.acertos}/${comp.ce.total}.` : ""}</p>` : ""}
-        <p class="en-acoes"><button type="button" class="botao" data-fechar>Ver o meu painel</button></p></div>
+        <p class="en-acoes"><button type="button" class="botao" data-fechar>Ver o meu painel</button>${botaoSom()}</p></div>
       ${barras ? `<div class="cartao"><h3>Por área</h3><ul class="en-barras">${barras}</ul></div>` : ""}
-      <div class="cartao"><h3>Questão por questão</h3><p class="en-nota">Errou? Abra a questão no PDF e descubra o porquê: é assim que se aprende.</p><ul class="sim-lista-res">${linhas}</ul></div>
+      <div class="cartao"><h3>Questão por questão</h3><p class="en-nota">Em cada questão tem um recado meu. Nos erros ele já vem aberto: leia, entenda o porquê e não decore a letra. É assim que se aprende.</p><ul class="sim-lista-res">${linhas}</ul></div>
     </div>`;
     main.focus();
+    // dó-mi-sol-dó para festa; mi-sol para quase lá; uma subidinha de força para o recomeço
+    tocar(p >= 70 ? [523, 659, 784, 1047] : p >= 50 ? [659, 784] : [392, 523]);
   }
 
   // ---------- relógio ----------
+  // prova inteira: 4 h de verdade (o banco entrega no fim); o aluno só pode esconder o relógio.
+  // treino e meia prova: sem pressa; o aluno liga o cronômetro se quiser (6 min por questão ou 2 h) e, no fim, só vem um aviso.
+  const cheia = () => t.modo === "prova" && !String(t.chave).includes("-");
+  const chaveCron = () => `enade:cron:${t.id}`;
+  const lerCron = () => { try { return localStorage.getItem(chaveCron()); } catch (e) { return null; } };
+  const gravarCron = (v) => { try { v === null ? localStorage.removeItem(chaveCron()) : localStorage.setItem(chaveCron(), v); } catch (e) {} };
+  const sugerido = () => (t.modo === "prova" ? 120 : Math.max(10, 6 * t.itens.length)) * 6e4;
+  let avisouTempo = false;
+  const fmt = (ms) => { const h = Math.floor(ms / 36e5), m = Math.floor((ms % 36e5) / 6e4), s = Math.floor((ms % 6e4) / 1e3); return (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0"); };
+  function botaoCron() {
+    const b = document.querySelector("[data-cron]"), v = lerCron();
+    if (!b || !t) return;
+    b.hidden = false;
+    if (cheia()) { b.textContent = v === "escondido" ? "⏱ Mostrar o relógio" : "⏱ Esconder o relógio"; b.setAttribute("aria-pressed", String(v !== "escondido")); }
+    else { b.textContent = v ? "⏱ Desligar o cronômetro" : "⏱ Ligar o cronômetro"; b.setAttribute("aria-pressed", String(Boolean(v))); }
+  }
+  function trocarCron() {
+    const v = lerCron();
+    if (cheia()) gravarCron(v === "escondido" ? null : "escondido");
+    else { gravarCron(v ? null : String(Date.now() + sugerido())); avisouTempo = false; }
+    botaoCron(); tictac();
+  }
   function tictac() {
-    const resta = new Date(t.prazo) - (Date.now() + desvio);
+    const agora = Date.now() + desvio;
+    const prazo = new Date(t.prazo) - agora;
     const el = document.querySelector("[data-relogio]");
-    if (resta <= 0) { el.textContent = "00:00"; entregar(true); return; }
-    const h = Math.floor(resta / 36e5), m = Math.floor((resta % 36e5) / 6e4), s = Math.floor((resta % 6e4) / 1e3);
-    el.textContent = (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-    el.classList.toggle("pouco", resta < 10 * 6e4);
+    if (prazo <= 0) { el.textContent = "00:00"; entregar(true); return; }   // o prazo do banco vale sempre
+    const v = lerCron();
+    if (cheia()) {
+      el.hidden = v === "escondido";
+      el.textContent = fmt(prazo);
+      el.classList.toggle("pouco", prazo < 10 * 6e4);
+      return;
+    }
+    el.hidden = !v;
+    if (!v) return;
+    const resta = Number(v) - Date.now();
+    if (resta > 0) { el.textContent = fmt(resta); el.classList.toggle("pouco", resta < 5 * 6e4); return; }
+    el.textContent = "⏰ 00:00"; el.classList.add("pouco");
+    if (!avisouTempo) { avisouTempo = true; document.querySelector("[data-salvo]").textContent = "O tempo de prova acabou! No dia seria hora de entregar, mas aqui é treino: pode continuar."; tocar([784, 523]); }
   }
 
   // ---------- eventos ----------
@@ -219,6 +287,8 @@
     if (b.hasAttribute("data-voltar-prova")) { desenharProva(); return; }
     if (b.hasAttribute("data-entregar")) return entregar(false);
     if (b.hasAttribute("data-fechar")) return voltar();
+    if (b.hasAttribute("data-cron")) return trocarCron();
+    if (b.hasAttribute("data-som")) { try { localStorage.setItem("enade:som", somLigado() ? "0" : "1"); } catch (e) {} b.outerHTML = botaoSom(); if (somLigado()) tocar([659, 784]); return; }
     if (b.hasAttribute("data-entrar-sim")) return CONTA.abrir();
     if (b.dataset.pag) { const it = t.itens[atual]; return mostrarPagina(it, Math.max(1, paginaVista + Number(b.dataset.pag))); }
     if (b.dataset.zoom) { escala = Math.max(.7, Math.min(2.6, escala + .2 * Number(b.dataset.zoom))); return mostrarPagina(t.itens[atual], paginaVista); }
@@ -260,6 +330,7 @@
     const primeiraEmBranco = t.itens.findIndex((it) => !respostas[it.id]);
     atual = primeiraEmBranco === -1 ? 0 : primeiraEmBranco;
     desenharProva();
+    botaoCron();
     tictac();
     relogio = setInterval(tictac, 1000);
   }

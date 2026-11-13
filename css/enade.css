@@ -143,3 +143,67 @@
 .pausado .sim-letras button, .pausado .en-barras .trilho i { transition: none; }
 @media (prefers-reduced-motion: reduce) { .sim-letras button, .en-barras .trilho i { transition: none; } }
 .sim-conta #btn-conta { padding: .35rem .7rem; border-radius: 999px; border: 1px solid var(--borda-forte); background: transparent; color: var(--texto); font: inherit; font-size: .85rem; cursor: pointer; }
+
+/* ---------- versão 2: meia prova, painel animado, balão da Stela, sons ---------- */
+.en-meia { margin: .7rem 0 0; font-size: .85rem; color: var(--texto-2); }
+.en-provas .repo .en-pdf { display: inline-block; margin-top: .7rem; font-size: .85rem; }
+.en-selo { display: inline-block; margin-left: .35rem; padding: .05rem .4rem; border-radius: 999px; font: 700 .75rem var(--f-mono); background: var(--superficie-2); }
+.en-selo.forte { color: var(--en-forte); } .en-selo.atencao { color: var(--en-atencao); } .en-selo.reforco { color: var(--en-reforco); }
+
+/* barras que enchem com um pulso de luz correndo (a "eletricidade na trilha") */
+[data-painel] .en-barras .trilho i { width: 0; position: relative; overflow: hidden; transition: width 1.2s var(--suave); }
+[data-painel].aceso .en-barras .trilho i { width: calc(var(--p) * 1%); }
+.en-barras .trilho i::after { content: ""; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation: en-pulso 2.6s ease-in-out infinite; }
+@keyframes en-pulso { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
+
+/* o medidor redondo dos acertos */
+.en-medidor { position: relative; }
+.en-medidor svg { display: block; width: 92px; margin: 0 auto .2rem; transform: rotate(-90deg); }
+.en-medidor circle { fill: none; stroke-width: 11; }
+.en-medidor .fundo { stroke: var(--borda-forte); }
+.en-medidor .arco { stroke: var(--cor-med, var(--neon)); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.4s var(--suave); filter: drop-shadow(0 0 6px var(--cor-med, var(--neon))); }
+.aceso .en-medidor .arco { stroke-dashoffset: calc(100 - var(--p)); }
+.en-medidor.forte { --cor-med: var(--en-forte); } .en-medidor.atencao { --cor-med: var(--en-atencao); } .en-medidor.reforco { --cor-med: var(--en-reforco); }
+.en-medidor strong { position: absolute; top: 46px; left: 0; right: 0; transform: translateY(-50%); font-size: 1.3rem !important; }
+
+/* a linha da evolução se desenha */
+.en-coluna { display: grid; gap: 1.2rem; }
+.en-evolucao svg { width: 100%; height: auto; overflow: visible; }
+.en-evolucao .meta { stroke: var(--en-forte); stroke-dasharray: 4 4; opacity: .6; }
+.en-evolucao .meta.meio { stroke: var(--en-atencao); }
+.en-evolucao text { font: 9px var(--f-mono); fill: var(--texto-3); }
+.en-evolucao polyline { fill: none; stroke: var(--neon); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.6s var(--suave); filter: drop-shadow(0 0 5px var(--neon)); }
+.aceso .en-evolucao polyline { stroke-dashoffset: 0; }
+.en-evolucao circle { fill: var(--neon-2, var(--neon)); stroke: var(--superficie); stroke-width: 2; opacity: 0; transition: opacity .3s calc(var(--i) * 120ms + .6s); }
+.aceso .en-evolucao circle { opacity: 1; }
+
+/* a Stela fala com o aluno */
+.en-recado.com-stela { display: flex; gap: .8rem; align-items: center; }
+.en-recado.com-stela img { width: 64px; height: auto; flex: none; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); animation: en-flutua 5s ease-in-out infinite; }
+.en-recado.com-stela p { margin: 0; }
+.en-memoji-login { float: right; width: 72px; height: auto; margin: -.4rem 0 .4rem .6rem; filter: drop-shadow(0 8px 12px rgba(0,0,0,.4)); animation: en-flutua 5s ease-in-out infinite; }
+@keyframes en-flutua { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.sim-nota-linha { display: flex; align-items: center; gap: 1rem; }
+.sim-memoji-res { width: 110px; height: auto; filter: drop-shadow(0 10px 14px rgba(0,0,0,.4)); animation: en-pula .9s var(--suave) both; }
+@keyframes en-pula { 0% { transform: scale(.3) rotate(-12deg); opacity: 0; } 70% { transform: scale(1.08) rotate(3deg); opacity: 1; } 100% { transform: none; } }
+.sim-lista-res li > .sim-balao { grid-column: 1 / -1; }
+.sim-balao summary { cursor: pointer; font: 700 .85rem var(--f-mono); color: var(--neon); padding: .2rem 0; }
+.sim-fala { display: flex; gap: .7rem; align-items: flex-start; margin-top: .4rem; padding: .7rem .9rem; border-radius: 16px; background: var(--superficie-2); border: 1px solid var(--borda-forte); }
+.sim-fala img { width: 56px; height: auto; flex: none; }
+.sim-fala p { margin: 0 0 .45rem; font-size: .92rem; line-height: 1.5; }
+.sim-fala p:last-child { margin-bottom: 0; }
+.sim-balao[open] .sim-fala { animation: en-abre .35s var(--suave); }
+@keyframes en-abre { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.sim-som { margin-left: .5rem; }
+
+/* pausa e "reduzir movimento": tudo parado, já no lugar final */
+.pausado [data-painel] .en-barras .trilho i, .pausado .en-medidor .arco, .pausado .en-evolucao polyline, .pausado .en-evolucao circle { transition: none; }
+.pausado .en-barras .trilho i::after, .pausado .en-recado.com-stela img, .pausado .en-memoji-login, .pausado .sim-memoji-res, .pausado .sim-balao[open] .sim-fala { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-painel] .en-barras .trilho i, .en-medidor .arco, .en-evolucao polyline, .en-evolucao circle { transition: none; }
+  .en-barras .trilho i::after, .en-recado.com-stela img, .en-memoji-login, .sim-memoji-res, .sim-balao[open] .sim-fala { animation: none; }
+}
+@media (max-width: 640px) { .en-memoji-login { width: 56px; } .sim-memoji-res { width: 80px; } }
+.sim-cron { font-size: .82rem; padding: .3rem .7rem; }
+.sim-relogio[hidden], .sim-cron[hidden] { display: none; }

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="assets/css/estilo.css">
   <link rel="stylesheet" href="assets/css/neon.css?v=1">
   <link rel="stylesheet" href="assets/css/conta.css?v=4">
-  <link rel="stylesheet" href="css/enade.css?v=1">
+  <link rel="stylesheet" href="css/enade.css?v=2">
 </head>
 <body>
   <div class="sim-pagina">
@@ -24,6 +24,7 @@
       <h1 data-titulo>Simulado ENADE<small>carregando…</small></h1>
       <span class="sim-salvo" data-salvo aria-live="polite"></span>
       <span class="sim-relogio" data-relogio role="timer" aria-label="Tempo restante">--:--</span>
+      <button type="button" class="botao contorno sim-cron" data-cron aria-pressed="false" hidden>⏱ Cronômetro</button>
       <button type="button" class="botao contorno" data-revisar hidden>Revisar e entregar</button>
       <span data-conta-lugar class="sim-conta"></span>
       <button type="button" id="btn-tema" aria-label="Mudar para o tema claro" class="botao contorno" style="padding:.35rem .6rem">
@@ -50,6 +51,6 @@
   <script src="assets/js/conta.js?v=6" data-disciplina="enade-ads"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="js/areas.js?v=1"></script>
-  <script src="js/simulado.js?v=2"></script>
+  <script src="js/simulado.js?v=3"></script>
 </body>
 </html>
