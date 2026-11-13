@@ -32,7 +32,8 @@
   function tituloDe(modo, chave) {
     if (modo !== "prova") return `Treino · ${esc(nomeArea(chave))}`;
     const [ano, parte] = String(chave).split("-");   // "2021-1" = meia prova
-    return parte ? `Prova ENADE ${esc(ano)} · ${esc(parte)}ª metade · ADS` : `Prova ENADE ${esc(ano)} · ADS`;
+    const nome = ano === "mista" ? "Prova sorteada" : `Prova ENADE ${esc(ano)}`;
+    return parte ? `${nome} · ${esc(parte)}ª metade · ADS` : `${nome} · ADS`;
   }
   function voltar() {
     if (window.opener && !window.opener.closed) { window.opener.focus(); window.close(); }

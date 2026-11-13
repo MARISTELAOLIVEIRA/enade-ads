@@ -207,3 +207,5 @@
 @media (max-width: 640px) { .en-memoji-login { width: 56px; } .sim-memoji-res { width: 80px; } }
 .sim-cron { font-size: .82rem; padding: .3rem .7rem; }
 .sim-relogio[hidden], .sim-cron[hidden] { display: none; }
+/* a prova sorteada ganha destaque, com a borda neon */
+.en-provas .repo.en-sorteada { border-color: var(--neon); box-shadow: 0 0 0 1px var(--neon), 0 0 22px var(--neon-brilho, transparent); }
