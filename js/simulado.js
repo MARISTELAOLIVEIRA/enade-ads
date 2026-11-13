@@ -33,6 +33,7 @@
     if (modo !== "prova") return `Treino · ${esc(nomeArea(chave))}`;
     const [ano, parte] = String(chave).split("-");   // "2021-1" = meia prova
     const nome = ano === "mista" ? "Prova sorteada" : `Prova ENADE ${esc(ano)}`;
+    if (parte === "15") return "Prova rápida · 15 questões · ADS";
     return parte ? `${nome} · ${esc(parte)}ª metade · ADS` : `${nome} · ADS`;
   }
   function voltar() {
@@ -259,7 +260,8 @@
   const chaveCron = () => `enade:cron:${t.id}`;
   const lerCron = () => { try { return localStorage.getItem(chaveCron()); } catch (e) { return null; } };
   const gravarCron = (v) => { try { v === null ? localStorage.removeItem(chaveCron()) : localStorage.setItem(chaveCron(), v); } catch (e) {} };
-  const sugerido = () => (t.modo === "prova" ? 120 : Math.max(10, 6 * t.itens.length)) * 6e4;
+  // cronômetro opcional: 2 h na meia prova; 6 minutos por questão no treino e na prova rápida (15 questões = 90 min)
+  const sugerido = () => (t.modo === "prova" && !String(t.chave).endsWith("-15") ? 120 : Math.max(10, 6 * t.itens.length)) * 6e4;
   let avisouTempo = false;
   const fmt = (ms) => { const h = Math.floor(ms / 36e5), m = Math.floor((ms % 36e5) / 6e4), s = Math.floor((ms % 6e4) / 1e3); return (h ? h + ":" : "") + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0"); };
   function botaoCron() {

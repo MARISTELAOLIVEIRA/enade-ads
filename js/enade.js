@@ -23,6 +23,7 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
     if (modo !== "prova") return ENADE_AREAS[chave] ? ENADE_AREAS[chave].nome : chave;
     const [ano, parte] = String(chave).split("-");
     const nome = ano === "mista" ? "Prova sorteada" : `Prova ${ano}`;
+    if (parte === "15") return "Prova rápida · 15 questões";
     return parte ? `${nome} · ${parte}ª metade` : ano === "mista" ? nome : `${nome} inteira`;
   }
   // números que sobem do zero (param com o botão de pausa)
@@ -115,7 +116,8 @@ const ENADE_PROVA_DIA = new Date("2026-11-29T13:30:00-03:00");
         <span class="repo-nome">INEP · 4 provas misturadas</span>
         <h4>🎲 Prova sorteada</h4>
         <p>35 questões como na prova real (8 de Formação Geral e 27 do Componente Específico), sorteadas das quatro provas. Cada vez sai uma prova diferente: dá para refazer sem decorar.</p>
-        <div class="en-botoes"><button type="button" class="botao" data-abrir-sim data-modo="prova" data-chave="mista">Prova sorteada · 4 h${selo("mista")}</button></div>
+        <div class="en-botoes"><button type="button" class="botao" data-abrir-sim data-modo="prova" data-chave="mista-15">⚡ Prova rápida · 15 questões${selo("mista-15")}</button>
+        <button type="button" class="botao contorno" data-abrir-sim data-modo="prova" data-chave="mista">Prova sorteada inteira · 35 questões · 4 h${selo("mista")}</button></div>
         <p class="en-meia">Ou meia prova sorteada, sem pressa (o cronômetro de 2 h é opcional):</p>
         <div class="en-botoes"><button type="button" class="botao contorno" data-abrir-sim data-modo="prova" data-chave="mista-1">1ª metade · 17 questões${selo("mista-1")}</button>
         <button type="button" class="botao contorno" data-abrir-sim data-modo="prova" data-chave="mista-2">2ª metade · 18 questões${selo("mista-2")}</button></div></div>`;
